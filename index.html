@@ -1,1 +1,117 @@
-<h3>hello world</h3>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Coze OAuth 聊天示例</title>
+  <!-- 引入 Coze SDK -->
+  <script src="https://lf-cdn.coze.cn/obj/unpkg/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/cn/index.js"></script>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Helvetica Neue", sans-serif;
+      background-color: #f4f6f8;
+    }
+
+    .container {
+      text-align: center;
+      padding: 30px;
+      background-color: #fff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #userIdInput {
+      padding: 10px;
+      width: 250px;
+      font-size: 16px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-left: 10px;
+      background-color: #007aff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #005bb5;
+    }
+
+    #chatContainer {
+      width: 100%;
+      height: calc(100vh - 120px); /* 保留顶部输入区域 */
+    }
+  </style>
+</head>
+<body>
+  <!-- 顶部用户输入区域 -->
+  <div class="container">
+    <input type="text" id="userIdInput" placeholder="请输入用户ID（如手机号）" required>
+    <button onclick="initChatWithOAuth()">使用 OAuth 登录并聊天</button>
+  </div>
+
+  <!-- 嵌入式聊天窗口 -->
+  <div id="chatContainer"></div>
+
+  <script>
+    const BOT_ID = "7471918135969447962";
+    const BACKEND_URL = "http://d5628635.natappfree.cc/serviceB";
+
+    function initChatWithOAuth() {
+      const userId = document.getElementById("userIdInput").value;
+
+      fetch(`${BACKEND_URL}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: userId }),
+      })
+      .then(response => response.json())
+      .then((data) => {
+        if (data.error) {
+          alert(`错误：${data.error}`);
+          return;
+        }
+
+        new CozeWebSDK.WebChatClient({
+          config: {
+            bot_id: BOT_ID,
+          },
+          componentProps: {
+            title: "Coze 智能助手",
+          },
+          auth: {
+            type: "token",
+            token: data.access_token,
+            onRefreshToken: async () => {
+              const refreshResponse = await fetch(`${BACKEND_URL}`, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ userId: userId }),
+              });
+              return (await refreshResponse.json()).access_token;
+            }
+          },
+          userInfo: {
+            userId: userId
+          },
+          targetElement: document.getElementById("chatContainer") // 关键：将聊天界面挂载到 div
+        });
+      })
+      .catch((error) => {
+        console.error("获取令牌失败：", error);
+        alert("初始化失败，请检查网络连接或联系管理员");
+      });
+    }
+  </script>
+</body>
+</html>
+
