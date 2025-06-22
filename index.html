@@ -139,7 +139,6 @@
       height: 400px;
       border-radius: 12px;
       overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -195,7 +194,7 @@
       <div class="form-group">
         <input type="text" id="userIdInput" class="form-control" placeholder="请输入手机号前7位">
       </div>
-      <button onclick="initChatWithOAuth()" class="btn">登录并聊天</button>
+      <button onclick="initChatWithOAuth()" class="btn">登录并开始测评</button>
       <!-- 调整后的文本位置，添加20px上边距 -->
       <p class="login-subtitle" style="margin-top: 20px;">All rights reserved by 皇家饼干</p>
     </div>
@@ -206,7 +205,7 @@
         <img src="blossompsy.jpg" alt="Logo">
       </div>
       <div class="welcome-message">Welcome!</div>
-      <div class="welcome-subtitle">您已成功登录聊天系统</div>
+      <div class="welcome-subtitle">欢迎进入BlossomPsy</div>
       <button onclick="logout()" class="btn">退出登录</button>
     </div>
   </div>
@@ -261,11 +260,11 @@
         chatClient = new CozeWebSDK.WebChatClient({
           config: {
             bot_id: BOT_ID,
-            asstBtn: false,
+            asstBtn: {isNeed: false},
           },
           componentProps: {
             title: "BlossomPsy3",
-            asstBtn: false,
+            asstBtn: {isNeed: false},
           },
           auth: {
             type: "token",
@@ -277,6 +276,14 @@
                 body: JSON.stringify({ userId: userId }),
               });
               return (await refreshResponse.json()).access_token;
+            }
+          },
+          footer: {
+            isShow: false
+          },
+          ui: {
+            header: {
+                isNeedClose: false,
             }
           },
           userInfo: { userId },
