@@ -299,20 +299,23 @@
     }
 
     function logout() {
-      // 隐藏聊天和欢迎信息，显示登录表单
-      if (chatClient) {
-        chatClient.hideChatBot();
-        chatClient = null;
-      }
-      document.getElementById('chatContainer').style.display = 'none';
-      document.getElementById('welcomeContent').style.display = 'none';
-      document.getElementById('loginContent').style.display = 'block';
+    // 隐藏聊天界面
+    if (chatClient) {
+      chatClient.hideChatBot();
       
-      // 退出登录后重新显示海报
-      if (loginBanner) {
-        loginBanner.style.display = 'block';
-      }
+      // 额外隐藏聊天容器（确保视觉上完全消失）
+      document.getElementById('chatContainer').style.display = 'none';
     }
+    
+    // 隐藏欢迎信息，显示登录表单
+    document.getElementById('welcomeContent').style.display = 'none';
+    document.getElementById('loginContent').style.display = 'block';
+    
+    // 退出登录后重新显示海报
+    if (loginBanner) {
+      loginBanner.style.display = 'block';
+    }
+  }
   </script>
 </body>
 </html>
